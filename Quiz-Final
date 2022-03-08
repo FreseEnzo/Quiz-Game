@@ -1,0 +1,554 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <windows.h>
+#define TEMPO_JOGO 15
+#define TEMPO_QUEST 22
+
+int start_game();
+int verify(int gab, char resp[]);
+void point(int win, int num, int time);
+int menu();
+void get_name();
+void ranking();
+void show_ranking();
+void print_exp();
+
+int rank = 0, t_total = 0;
+char name[50], curr_tema[15];
+//Matriz com as dias
+char question[4][10][8][700] = {
+    /*Temas*/
+    {
+        /*Pessoas*/
+        {"Tercio Pacitti",
+         "Pessoa (1)\n1 Levou a informática para o ITA, a Aeronáutica, à UNIRIO e à pós-graduação de engenharia da UFRJ que viria a ser a Coppe/UFRJ",
+         "2 Foi reitor do ITA, onde criou o curso da Engenharia da Computação.",
+         "3 Formado engenheiro aeronáutico pelo Instituto Tecnológico de Aeronáutica (ITA) em 1952",
+         "4 Um dos pioneiros da Computação para Engenheiros no país",
+         "5 Engenheiro Aeronáutico pelo (ITA), foi primeiro lugar da turma de 1952, mestre e doutor pela Universidade da Califórnia em Berkeley.",
+         "6 Escreveu o Fortran Monitor, que de 1967 a 1987 vendeu 250 mil exemplaresno país, tendo alcançado mais de 1 milhão de exemplares vendidos nos últimos anos.",
+         "7 Foi o primeiro diretor de Departamento de Cálculo Científico da Coppe, que em 1970 tornou-se o Núcleo de Computação Eletrônica do qual foi Diretor e que hoje leva o seu nome."},
+        {"Rafael Burlamaqui",
+         "Pessoa (2)\n1 Na introdução a programação afirmou que: Programar é basicamente construir Algoritmos!",
+         "2 Somente iniciar a programação quando; Souber qual problema deve ser resolvido; Souber como resolver o problema.",
+         "3 O representação do Algoritmo pode ser em; Pseudocódigo ou Fluxograma",
+         "4 O Professor Thiago Prego sempre o cita ao final das apresentações.",
+         "5 Ele afirma que um teste de lógica pode apresentar erros de sintaxe ou lógica",
+         "6 Ensinou o algoritmo de como fazer uma omelete.",
+         "7 É professor do CEFET-NI e tem nome de pintor renascentista."},
+        {"Vanessa Braganholo",
+         "Pessoa (3)\n1 Definiu o Algoritmo clássico: Bogo Sort",
+         "2 Definiu o Algoritmo clássico: Bubble Sort",
+         "3 O representação do Algoritmo pode ser em; Pseudocódigo ou Fluxograma",
+         "4 O Professor Thiago Prego sempre a cita ao final das apresentações.",
+         "5 Ela afirma que um teste de lógica pode apresentar erros de sintaxe ou lógica",
+         "6 Citou o Algoritmos clássicos: Selection Sort.",
+         "7 É professora da UFF e tem nome de uma cantora."},
+        {"Dennis Ritchie",
+         "Pessoa (4)\n1 A linguagem de programação denominada C foi criada em 1972 por ele.",
+         "2 Trabalhou no centro de Pesquisas da Bell Laboratories onde criou a linguagem C.",
+         "3 Reescreveu o Sistema Operacional UNIX, que até então era escrito na linguagem Assembly.",
+         "4 Nascido em Bronxville, Nova Iorque, formou-se em física e matemática aplicada pela Universidade de Harvard.",
+         "5 Sua morte, que veio uma semana depois da morte de Steve Jobs, não recebeu nenhuma cobertura da mídia.",
+         "6 Kernighan disse ao The New York Times que \" As ferramentas que eleconstruiu - e seus descendentes diretos - controlam praticamente tudo hoje, em dia \"",
+         "7 Ganhou um lugar importante na história da indústria informática. A linguagem C continua a ser largamente utilizada no desenvolvimento de aplicações e sistemas operacionais"},
+        {"Linguagem C",
+         "Pessoa (5)\n1 Foi criada em 1972 por Dennis Ritchie no centro de Pesquisas da BellLaboratories.",
+         "2 Em 1983 o ANSI (American National Standards Institute) me estabeleceu um padrão.",
+         "3 Permite manipulação de bits, bytes e endereços.",
+         "4 Não efetua nenhuma verificação em tempo de execução, a responsabilidade é do programador.",
+         "5 Possui 32 palavras chaves, 27 originais de meus criadores e 5 do comitê ANSI.=> if, break, else, long, switch, for. Sou uma linguagem estruturada.",
+         "6 Seu Principal componente estrutural é a função, ou seja, blocos de código",
+         "7 Minha Estrutura Básica\nint main( ) {\ndeclaração de variáveis locais;\nlista de comandos;\nsystem(“PAUSE”);\nreturn 0;}"}},
+    {/*Coisas*/
+     {"Coisa (1)\nControle de Fluxo Estrutura de Decisao IF-else e switch",
+      "1 Conceitos necessários para a criação de programas em C com um único fluxo ou caminho. Ou seja, programas que irão sempre executar um determinado número de instruções sempre em um mesmo formato é fato raro.",
+      "2 Grande parte das vezes os problemas dão origem a programas que possuem variados fluxos ou caminhos. ",
+      "3 Para que as instruções em um programa tomem um caminho diferente, é necessário que haja uma instrução responsável pela decisão de qual caminho tomar.",
+      "4 Permite estabelecer um controle de fluxo no programa de forma que o mesmo possa escolher quando executar um determinado bloco de instruções ou não.",
+      "5 Permite estabelecer um controle de fluxo no programa de forma que o mesmo possa optar por executar um bloco de instruções em vez de outro.",
+      "6 Faça um programa em C que receba um número inteiro e verifique se este número é maior que 20, em caso afirmativo o programa deverá imprimir a mensagem: \" Maior que 20 \".",
+      "7 #include <stdio.h>\n#include <stdlib.h>\nint main() {\nint num;\n printf(\" Informe o numero : \");\nscanf(\" % d \", &num);\nif (num > 20)\nprint\(\" Maior que 20 \");\n}"},
+     {"Controle de Fluxo Estrutura de Repeticao",
+      "Coisa (2)\n1 Nossos algoritmos precisarão ser executados mais de uma vez e, para que não tenhamos de reescrever trechos idênticos que aumentariam consideravelmente o tamanho do nosso algoritmo, resolveremos este problema com.",
+      "2 Permite que uma sequencia de comandos seja executada certo número de vezes até que uma determinada condição seja satisfeita.",
+      "3 Um contador é utilizado para contar o número de vezes que um evento (uma instrução) ocorre, ou seja, contar a quantidade de vezes que uma instrução é executada. variável_1 = variável_1 + constante",
+      "4 Acumuladores -> Somas ou produtos acumulativos são frequentes em cálculos de somatórios, produto ou consolidações de resultados (totais, médias,...).",
+      "5 Um acumulador (ou somador) é uma variável de controle utilizada para acumular valores, geralmente está dentro dessa Estrura.Página ",
+      "6 WHILE, DO WHILE Laços condicionais, não se sabe quantas vezes vai ocorrer !e FOR Laços contados, sabe–se quantas vezes vai ocorrer.",
+      "7 Comando FOR\nForma geral: \nfor (<inicialização> ; < expressão > ; <operação>) \n{ comando1; comando2;\n} \nComando WHILE\nwhile (condição)\ncomando; \nwhile (condição)\n{comando1;\ncomando2;\ncomando3;\n"},
+     {"Vetores",
+      "Coisa (3)\n1 E se fossem 40 alunos? \n• É possível definir variáveis que guardam mais de um valor de um mesmo tipo?\n • Sim. Essas variáveis são conhecidas como variáveis compostas, variáveis subscritas, variáveis indexáveis ou arranjos.",
+      "2 É a forma mais simples de organizarmos dados na memória do computador.",
+      "3 Quando declaramos um (conceito análogo ao de declaração de uma variável simples) devemos informar sua dimensão, isto é, espaço de memória que é reservado.",
+      "4 Devemos também informar o tipo dos valores que serão armazenados (por exemplo, int, float ou double). ",
+      "5 Declaração \nint x[10]; \nEsta declaração reserva um espaço de memória contínuo para armazenar 10 \nvalores inteiros. • O acesso a cada elemento é feito por meio da indexação da \nvariável x.\n",
+      "6 Para acessar os elementos usa-se um índice. O índice define a posição da variável . tem o primeiro elemento na posição 0 (zero).",
+      "7 Utilização\nfloat media, notas[40]; \nnotas [0] = 8; \nnotas [1] = 5.5; \nnotas [2] = 1.5; \nmedia = (notas[0] + notas[1] + notas[2]) / 3;\n},"},
+     {"Matrizes",
+      "Coisa (4)\n1 Assim como os vetores, são uma estrutura homogênea",
+      "2 Diferente dos vetores, permitem o armazenamento em várias dimensões,",
+      "3 Para atribuir e acessar valores, basta utilizar o índice da posição, que inicia com 0 (zero) e termina com n-1, sendo n o tamanho da dimensão.",
+      "4 Cada acesso, seja atribuição ou leitura de um valor requer uma instrução doprograma, o que poderia levar o programador a ter de escrever centenas de instruções.",
+      "5 As estruturas de iteração permitem eliminar essa necessidade tornando possível o acesso com milhares de posições em algumas poucas linhas de código.",
+      "6 Para cada dimensão da será necessário uma estrutura de iteração afim de percorrer todas as dimensões.",
+      "7 Declaração;\n#define MAXLIN 7\n#define MAXCOL 6 \nfloat notas [MAXLIN] [MAXCOL];nInicialização;\nfloat m[4][3] = {5.0,10.0,15.0,20.0,25.0,30.0,35.0,40.0, 45.0,50.0,55.0,60.0};n"},
+     {"Funcoes",
+      "Coisa (5)\n1 Estão presentes em todo o código de um programa, embora nas aulas anteriores elas não tenham sido mencionadas,",
+      "2 Grande quantidade de instruções em um único bloco afetam a legibilidade e entendimento do programa. Solução: utilizar uma estrutura que explicite as pequenas soluções.",
+      "3 Vantagens da modularização: Facilita a construção de grandes programas através da divisão em pequenas etapas: módulos (sub-rotinas ou subprogramas). Permite que trechos do programa possam ser reutilizados em diferentes partes do programa ou em novos programas.",
+      "4 O uso envolve três passos: • Declaração (protótipo) – antes do main( ) \n• Definição (código da função) – depois do main( ) \n• Ativação (chamada): dentro do main( ) ou de uma outra função\n",
+      "5 Síntese de Declaraçãon\nint soma (int a, int b);\nvoid imprime Soma(int a, int b);\nint anoAtual ();\nSíntese da Definição\ntipo_retornado nome_da_função (lista_de_parâmetros){\ndeclaração de variáveis;\ncomandos;\nreturn (expressão); /*opcional*/\n}",
+      "6 Ativação sem retorno de valor:\nnome_da_função (parâmetros);\nAtivação com retorno de valor:\nvariável = nome_da_função(parâmetros);\nif (nome_da_função(parâmetros) < 100)...\nwhile (nome_da_função(parâmetros) < 10)...\nprintf(“o valor é: %d”,nome_da_função(parâmetros));\n",
+      "7 O endereço (localização) na memória do parâmetro de origem é transferido para parâmetro da função e a função usa o elemento original em suas operações (mesmo que com um identificador diferente)."},
+     {"Strings",
+      "Coisa (6)\n1 São sequências de caracteres.",
+      "2 Em C, são representadas através de vetores de caracteres, terminados com o caractere de fim de --- .",
+      "3 Vetores em C são armazenados em memória a partir de um “endereço base”; Strin são vetores de caracteres, portanto também possuem este endereço;",
+      "4 Declaração char frase[16] = “Primeira acão”; /* Esta atribuição pode ser feita APENAS na declaração!*/",
+      "5 Inicialização char frase[6] = {„T‟, „e‟, „s‟, „t‟, „e‟, „‟); /* inicializado como um vetor de caracteres comum, „forçando‟ o caracter terminador  */",
+      "6 Não é um tipo primitivo da linguagem C, por isso as seguintes operações NÃO são válidas: char str1[10]; char str2[100] = “Palavra 2”; str1 = str2; /* ERRO! Não copia str2 em str1 */ if (str1 == str2) /* ERRO! Não compara str1 com str2 */ { …. }",
+      "7 A função gets() permite que o usuário forneça mais caracteres do que os que podem ser armazenados no vetor (o que pode causar um erro). Para evitar este problema, pode-se utilizar a função fgets:"},
+     {
+         "Structs",
+         "Coisa (7)\n1 São Estruturas de Dados Heterogêneas",
+         "2 Uma estrutura agrupa várias variáveis numa só.",
+         "3 Funciona como uma espécie de “ficha”. Uma ficha armazena diversos dados relacionados, porém de tipos diferente.",
+         "4 Serve para agrupar um conjunto de dados não similares, formando um novo tipo de dados.",
+         "5 Forma Geral \ntypedef struct {\ntipo_campo1 nome_campo1;\ntipo_campo2 nome_campo2;\n...\n} nome_do_tipo_da_estrutura;\n",
+         "6 A grande maioria dos problemas requer o uso de estruturas heterogêneas, o que não é possível com as variáveis e vetores declarados a partir dos tipos nativos da linguagem C.",
+         "7 O uso com vetores, permite obter uma estrutura similar à uma matriz heterogênea, o que não é possível com a declaração de uma matriz com tipos básicos",
+     },
+     {
+         "Arquivos",
+         "Coisa (8)\n1 Podem armazenar grande quantidade de informação",
+         "2 Acesso a informação pode ser concorrente (mais de um programa ao mesmo tempo)",
+         "3 Nomes de Extensões\narq.txt arquivo texto simples\narq.c código fonte em C\narq.pdf portable document format\narq.html arquivo para paginas WWW (hypertext markup language)\n4Texto - armazena caracteres que podem ser mostrados diretamente na tela ou modificados por um editor de textos simples. ",
+         "5 Binário – Amazena sequencia de bits sujeita as convenções do programa que o gerou.",
+         "6 Caminho absoluto:\n• Descrição de um caminho desde o diretório raiz:\n- C:\\Users\aluno\\Downloads\teste.txt [Windows]\nCaminho relativo:\n• Descrição de um caminho desde o diretório corrente:\n- arq.txt [localizado no mesmo diretório do executável]\n- mc102/lab.c\n",
+         "7 Lendo Dados\n#include int main()\n{ FILE *f; \nchar c;\nf = fopen (\" teste.txt \", \" r \");\nif (f == NULL) { perror(\" teste.txt \"); \nreturn 1; \n} while (fscanf(f, \" % c \", &c) != EOF){\nprintf(\" % c \", c);\n} fclose(f);\nreturn 0;\n}",
+     },
+     {
+         "Recursividade",
+         "Coisa (9)\n1 Aquela que chama a si própria.",
+         "2 Também pode ser considerado, se chamar outras funções que, em algum momento, chamem a primeira função.",
+         "3 É um recurso de programação que pode ser usada na linguagem C, Java, Visual Basic, entre outras.",
+         "4 Executam tarefas repetitivas sem utilizar nenhuma estrutura de repetição, como for ou while.",
+         "5 Essa elegância e simplicidade têm um preço que requer muita atenção em sua implementação.",
+         "6 Uma função pode chamar a si própria por um número limitado de vezes. Esse limite é dado pelo tamanho da pilha.",
+         "7 Cada vez que uma função é chamada de, uma cópia dos seus parâmetros é alojada e armazenada , de modo a não perder os valores dos parâmetros das chamadas anteriores.",
+     },
+     {
+         "Ponteiro",
+         "Coisa (10)\n1 É uma variável que, em vez de guardar o dado, guarda o endereço de memória",
+         "2 Assim, a variável irá \"apontar\" para aquele endereço de memória que armazena um determinado tipo de valor,",
+         "3 A grande dificuldade relacionada é saber quando está sendo acessado o seu valor, ou seja, o endereço de memória, ou a informação apontada.",
+         "4 Essa capacidade de armazenar o endereço de memória associado à um valor, permite resolver as demandas de passagem por referência.",
+         "5 Vetores e matrizes podem facilmente serem utilizados em conjunto.",
+         "6 Na prática cada posição de um vetor ou matriz possui um espaço de memória reservado, assim, podemos considerar uma posição de um vetor como uma variável.",
+         "7 Pode apontar para qualquer tipo de dado, inclusive pode apontar para tipos de dados definidos pelo próprio programador",
+     }},
+
+    {/*Anos*/
+     {"Antes de 1940",
+      "Ano (1)\n1 Ada Lovelace escreveu o primeiro algoritimo.",
+      "2 Charles Babbage, Engenheiro Mecânico, originou o conceito de Computador Programável. A Máquina Analítica.",
+      "3 O tear de Jacquard, inventado por Joseph-Marie Jacquard, usava furos em cartões perfurados para representar os movimentos do braço do tear ao realizar costuras, a fim de gerar padrões decorativos automaticamente.",
+      "4 Herman Hollerith - Impulsionador do leitor de cartões perfurados, instrumento essencial para a entrada de informação para os computadores da época. Foi também um dos fundadores da IBM, precursor do processamento de dados.",
+      "5 Hollerith, começou a codificar os dados do censo em cartões perfurados.",
+      "6 Os primeiros códigos para computador eram especializados segundo as aplicações. Nas primeiras décadas do século XX, os cálculos numéricos eram baseados em números decimais.",
+      "7 A máquina de Turing era uma abstração do funcionamento da máquina de uma fita de marcação, por exemplo, em uso em empresas de telefonia"},
+     {"1940",
+      "Ano (2)\n1 Os primeiros computadores elétricos, reconhecidamente modernos, foram criados.",
+      "2 A velocidade limitada e a pequena capacidade da memória forçavam os programadores a escrever a mão economicamente, programas em linguagem de montagem (Linguagem Assembly),",
+      "3 Konrad Zuse publicou um artigo sobre a sua linguagem de programação Plankalkül. ",
+      "4 Konrad Zuse inventou o primeiro computador eletromecânico, constituído de relés - efetuava cálculos e exibia os resultados em fita perfurada.",
+      "5 Z2 O primeiro computador controlado por processamento, que foi usado para ajudar a desenvolver os mísseis Henschel Hs 293 e Henschel Hs 294, precursores dos modernos mísseis de cruzeiro.",
+      "6 Algumas linguagens importantes que foram desenvolvidas durante este período incluem o Plankalkül",
+      "7 Algumas linguagens importantes que foram desenvolvidas durante este período incluem o ENIAC. Primeiro Computador Digital Eletrônico."},
+     {"1950",
+      "Ano (3)\n1 Surgem as primeiras três linguagens de programação modernas, cujos descendentes ainda estão em uso.",
+      "2 Surgiu o FORTRAN, a \"FORmula TRANslator\", inventada por John Backus.",
+      "3 Surgiu o LISP, a \"LISt Processor\", inventada por John McCarthy.",
+      "4 Surgiu o COBOL, a COmmon Business Oriented Language, criada pelo Short Range Committee, com grande influência de Grace Hopper",
+      "5 Outro marco foi a publicação, por um comitê de cientistas americanos e europeus, de \"uma nova linguagem para os algoritmos\", a ALGOL 60.",
+      "6 Niklaus Wirth criou uma linguagem mais simples: Pascal.",
+      "7 Panorama geral das Linguagens nesse período; Regional Assembly Language; Autocode; FORTRAN; FLOW-MATIC (antecessor do COBOL); COMTRAN (antecessor do COBOL); LISP; ALGOL 58; FACT (antecessor do COBOL); COBOL; APL; Simula; BASIC; PL/I."},
+     {"1967 - 1978",
+      "Ano (4)\n1 A maioria dos principais paradigmas de linguagem agora em uso foram inventados durante este período.",
+      "2 A linguagem Simula, inventada por Nygaard e Dahl como um super conjunto de Algol 60, foi a primeira linguagem a suportar os conceitos programação orientada a objetos.",
+      "3 Linguagem C, uma das primeiras linguagens de programação de sistemas, foi desenvolvido por Dennis Ritchie e Ken Thompson nos laboratórios da Bell nesse período.",
+      "4 Linguagem Smalltalk nesse período forneceu uma base completa para o projeto de uma linguagem orientada a objetos.",
+      "5 Linguagem Prolog, projetada nessa época por Colmerauer, Roussel, e Kowalski, foi a primeira linguagem de programação do paradigma lógico",
+      "6 Linguagem ML, inventada por Robin Milner nesse período, é uma linguagem funcional, baseada em Lisp, estaticamente tipada.",
+      "7 O SQL foi desenvolvido originalmente no meado desse período noslaboratórios da IBM, dentro do projeto System R, que tinha por objetivo demonstrar a viabilidade da implementação do modelo relacional"},
+     {"1980 1990",
+      "Ano (5)\n1 A década foi um tempo de relativa consolidação das linguagens imperativas",
+      "2 A linguagem C++ combinou orientação a objetos e programação de sistemas",
+      "3 O governo dos Estados Unidos padronizou a Ada, uma linguagem de programação de sistemas destinados à utilização por parte dos contratantes de defesa.",
+      "4 No Japão e em outros lugares, vastas somas foram gastas investigando as chamadas linguagens de programação de quinta geração que incorporavam a programação lógica em suas construções.",
+      "5 A comunidade de linguagens funcionais se dedicou a padronizar a ML e o Lisp. Ao invés de inventar novos paradigmas, todos estes esforços visaram aperfeiçoar as ideias inventadas na década anterior.",
+      "6 No entanto, uma tendência nova e importante na concepção de linguagens foi o aumento do foco na programação de sistemas de larga escala com o uso de módulos, ou em unidades organizacionais de código de larga-escala. As linguagens Modula, Ada e ML desenvolveram notáveis sistemas de módulos durante esta década,",
+      "7 A década também trouxe avanços na implementação das linguagens de programação. O movimento RISC, em arquitetura de computadores postulou que o hardware deveria ser concebido para os compiladores ao invés de ser voltado a programadores assembly."}},
+    {/*LUGAR - AULA*/
+     {"Introducao a Programacao Aula 1",
+      "Aula(1)\n1 Qual motivação pra aprender programação? Aprender a programar é aprender a pensar. Faz bem ao cérebro; A quem quer trabalhar falta gente qualificada a defasagem de mão obra hoje gira em torno de 50%..",
+      "2 Algoritmo Conceito central da programação; Programar é basicamente construir algoritmos! Um algoritmo pode ser definido como uma sequênciafinita de passos (instruções) para resolver um determinado problema.",
+      "3 Processo de resolução de problemas: Requisitos; Algoritmo; Codificação em Linguagem de Programação “C”; Teste.",
+      "4 Algoritmos clássicos: Insertion Sort",
+      "5 A ideia é percorrer o vetor diversas vezes, a cada passagem fazendo flutuar para o topo o maior elemento da sequência. Essa movimentação lembra a maneira como as bolhas em um tanque de água procuram seu próprio nível. O nome do algoritmo vem desse movimento. Algoritmos clássicos: Bubble Sort.",
+      "6 Arquitetura de um computador: Entrada – Saída – Armazenamento.",
+      "7 Entrada=> Teclado-Mouse-Scaner-Webcan\nSaída => Vídeo – Impressoras – Auto-Falantes\nArmazenament0=> Memória – Disco Rígido – CD\\DVD - PenDriv\n"},
+     {"Introducao a Programacao Aula 2",
+      "Aula(2)\n1 Século 21: Estamos na Era Digital!; É a Internet!; A computação está mudando tudo...",
+      "2 Paradigmas de Programação; Definem regras básicas; Exemplos (dentre outros): Não estruturado\n Estruturado\n Orientado a Objetos\n",
+      "3 Paradigma estruturado\n Anos 60\n Artigo “Go To Statement Considered Harmful” de Edsger\n Dijkstra\n Eliminação de GOTO e adoção de três estruturas básicas:\n Sequência (de cima para baixo)\n Decisão (se...então...senão)\n Repetição (loops)\n",
+      "4 Estrutura de Decisão\nLeia n1, n2 \nse n1 > n2 \nentão \nEscreva “O primeiro é maior” \nsenão \nse n1 < n2 \nentão \nEscreva “O segundo é maior” \nsenão \nEscreva “São iguais” \nfim-se \nfim-se\n",
+      "5 Estrutura de Repetição – Repetição Contável\npara <var> de <valor-inicial> até <valor-final> com passo\n<incremento> faça\nBloco do loop\nfim-para\n",
+      "6 Repetição contável: Observações\n• Só é possível utilizar repetição contável se conseguirmos\ndeterminar de antemão quantas repetições são necessárias\n• O computador controlará as repetições\n- Total de ((fim – início) / passo )+ 1 repetições\n• Normalmente se deseja acessar o valor da repetição a cada iteração\n",
+      "7 Teste de Mesa ou Chinês\n Ler o algoritmo do início ao fim, obedecendo cada uma dasinstruções\n Anotar os valores de cada variável para cada passo doalgoritmo\n Ao final, será possível identificar se alguma instrução estáse comportando de forma inapropriada\n"},
+     {"Introducao a Linguagem C",
+      "Aula(3)\n1 Linguagem de Nível Médio, pois combina elementos de linguagens de alto nível (Basic, Pascal) com a funcionalidade da linguagem assembler (instruções de máquinas). Permite manipulação de bits, bytes e endereços.",
+      "2 Possui 32 palavras chaves, 27 originais de seus criadores e 5 do comitê ANSI.\n• if, break, else, long, switch, for,\n",
+      "3 Principal componente estrutural de C é a função, ou seja, blocos de código com única funcionalidade.",
+      "4 Compilação e Execução\n• Editor: Bloco de notas, Dev-C++\n• Compilador: gcc (Linux), minGW (Windows)\n• Considerando que o código esteja armazenado em prog.c\n",
+      "5 Função main()\n• Todo programa em C deve ter uma função main.\n• Deve existir em algum lugar do programa e marca o ponto de início\de execução do mesmo.\n",
+      "6 Ponto e vírgula, Chaves e Comentários - Em C, letras maiúsculas e minúsculas são diferentes, case sensitive. Todas as variáveis em C devem ser declaradas antes de serem usadas.Variáveis\n• Dentro de funções ou blocos (variáveis locais);\n• Como parâmetros de funções (parâmetros formais);\n• Fora de todas as funções (variáveis globais).\n",
+      "7 Diretiva include\ninicialmente no diretório atual.\n• #include “meuProjeto.h”\nprocurados no diretório padrão do compilador (diretório include);\n• #include <stdio.h>\n"},
+     {"Software DevC++ Programacao",
+      "Aula(4)\n1 Variáveis=> Posição nomeada de memória, que é usada para guardarum valor que pode ser modificado pelo programa.",
+      "2 Nomes de arquivos entre aspas serão procurados inicialmente no diretório atual; #include “meuProjeto.h” - Nomes de arquivos entre símbolos os simbolos < e > serão procurados no diretório padrão do compilador (diretórioinclude); #include <stdio.h>",
+      "3 Função printf ( ) - É uma função que imprime um determinado conteúdo no vídeo ou saída padrão=> Forma geral => printf (“string de controle”, lista de argumentos); - printf(“O resultado é: % d”, cont);“string de controle” - contém a mensagem que será exibida na tela e comandos de formatação; “lista de argumentos” - contém os valores, expressões, ou literais que serão formatados;Comandos de formatação • %c Caractere • %d Inteiros com sinal • %f Pontoflutuante • %.2f Ponto flutuante com duas casas decimais",
+      "4 Função scanf ( ) - É uma função que permite capturar valores fornecidos viateclado e armazená-los em variáveis => Forma geral => scanf(“string de controle”, argumento); - int n; scanf (\" % d \", &n);“string de controle” - determina o tipo do valor a ser lido; “argumento” – variável destino do valor lido (passar o endereço);Especificadores de formato • %c lê caracter • %d lê número inteiro • %f lê número real (ponto flutuante)",
+      "5 Operadores Aritméticos Adição+ Subtração- Divisão/ Multiplicação* Resto da Divisão Inteira % Decremento - - Incremento++.",
+      "6 Operadores Relacionais > Maior que >= Maior ou igual que < Menor que <= Menor ou igual que == Igual a != Diferente de",
+      "7 Operadores Lógicos && Condição “E” || Condição “OU” ! Negação"},
+     {"Software DevC++ Programacao",
+      "Aula(5)\n1 Operadores de Atribuição => (= x = y Atribui o valor de y a x) (+= x += y Equivale a x = x + y) (-= x -= y Equivale a x = x – y) (*= x *= y Equivale a x = x * y) (/= x /= y Equivale a x = x / y) (%= x %= y Equivale x = x % y)",
+      "2 Incremento e Decremento\nAplicáveis apenas em variáveis de tipos escalares (int ou char).\n-fixado ou pós-fixado.\n• ++i, --i\n- Incrementa e depois atribui \n• i++, i--\n- Atribui e depois incrementa\n",
+      "3 Função printf ( ) - É uma função que imprime um determinado conteúdo no vídeo ou saída padrão=> Forma geral => printf (“string de controle”, lista de argumentos); - printf(“O resultado é: % d”, cont);“string de controle” - contém a mensagem que será exibida na tela e comandos de formatação; “lista de argumentos” - contém os valores, expressões, ou literais que serão formatados;Comandos de formatação • %c Caractere • %d Inteiros com sinal • %f Ponto flutuante • %.2f Ponto flutuante com duas casas decimais",
+      "4 Função scanf ( ) - É uma função que permite capturar valores fornecidos via teclado e armazená-los em variáveis => Forma geral => scanf(“string de controle”, argumento); - int n; scanf (\"%d\", &n);“string de controle” - determina o tipo do valor a ser lido; “argumento” – variável destino do valor lido (passar o endereço);Especificadores de formato • %c lê caracter • %d lê número inteiro • %f lê número real (ponto flutuante)",
+      "5 Funções Matemáticas\nÉ necessário: #include <math.h>\n",
+      "6 Declaração de Variáveis\nOnde declarar:\n• Dentro de funções ou blocos (variáveis locais);\n• Como parâmetros de funções (parâmetros formais);\n• Fora de todas as funções (variáveis globais).\nint a; /* declara uma variável do tipo int */\nint b; /* declara outra variável do tipo int */\nfloat c; /* declara uma variável do tipo float */\na = 5; /* armazena o valor 5 em a */\nb = 10; /* armazena o valor 10 em b */\nc = 5.3; /* armazena o valor 5.3 em c */\nint a,b;\nint a = 5, b = 10; /* declara e inicializa */\nfloat c = 5.3\n",
+      "7 Tipos de Dados e Tamanhos\nchar 1 byte -128 a 127\nunsigned char 1 byte 0 a 255\nshort int 2 bytes -32768 a 32767\nunsigned short int 2 bytes 0 a 65535\nlong int 4 bytes -2147483648 a 2147483647\nunsigned long int 4 bytes 0 a 4294967295\nfloat 4 bytes a 10^-38 a 10^38\ndouble 8 bytes a 10^-308 a 10^308\n"},
+     {
+         "Algoritmo",
+         "Aula(6)\n1 Sequência de instruções ou comandos realizados de maneira sistemática com o objetivo de resolver um problema ou executar uma tarefa.",
+         "2 Quando uma máquina é treinada para ter uma inteligência artificial, ela necessita passar por um processo de aprendizagem para que tome as decisões que o seu criador julguem corretas.",
+         "3 Incorpora o uso da tecnologia digital às soluções de problemas tradicionais.",
+         "4 Conjunto de etapas precisas que não precisam de grande esforço mental para serem seguidas, mas que, se obedecidas exatamente e mecanicamente, levarão ao resultado desejado.",
+         "5 Conjunto de dados utilzados por uma sequência de treinamento para criar um modelo de Machine Learning.",
+         "6 Construção de sistemas artificiais que obtém informação de imagens ou quaisquer dados multidimensionais",
+         "7 No aprendizado de máquina, a retropropagação é um recurso amplamente usado para treinar redes neurais feedforward",
+     }}
+
+};
+
+int main()
+{
+    // Define o valor das páginas de código UTF8 e default do Windows
+    UINT CPAGE_UTF8 = 65001;
+    UINT CPAGE_DEFAULT = GetConsoleOutputCP();
+    // Define codificação como sendo UTF-8
+    SetConsoleOutputCP(CPAGE_UTF8);
+    // Start no timer
+    srand(time(NULL));
+
+    //  Chamada de Funções
+    printf("\n\t---- Quiz ----\n\n");
+    menu();
+
+    // Fim
+    SetConsoleOutputCP(CPAGE_DEFAULT);
+
+    return 0;
+}
+//Printa explicação
+void print_exp()
+{
+    printf("\n----Explicação----\n\n1 O jogo é composto de varias rodadas (dependendo do tema) => 07 dicas => 07 pontos. \n2 A cada interação uma nova dica é informada até um total de 07 dicas. \n3 A cada nova dica informada, a pontuação da rodada é diminuída 01 ponto do jogador por penalidade de Dica. Esse ponto é atribuído ao Software\n4 Cada rodada dura no máximo 22 segundos, e caso seja atingida, a pontuação recebida pelo jogador será zero, o jogo todo dura no máximo 152s. \n5 A cada palpite errado do jogador, uma nova dica é informada e o tempo daquela dica e aumentado como se tivesse passado 22 segundos.\n6 Ao término das rodadas o jogador receberá a pontuação total e quanto tempo levou para completar as rodadas.\n8 Pode-se checar o ranking para ver sua classificação geral, também informa-se o tema");
+}
+//Printa RAnking
+void show_ranking()
+{
+    FILE *arq;
+    char p_name[50], p_tema[15];
+    int p_time, p_rank;
+    if ((arq = fopen("arq.txt", "r")) == NULL)
+    {
+        printf("Erro ao abrir o arquivo.\n");
+    }
+    printf("\t      RANKING\n\n");
+    printf("       RANK     TEMPOS      NOMES          TEMA\n");
+    int x = 1;
+    while (fscanf(arq, "%s%d%d%s", p_name, &p_time, &p_rank, p_tema) != -1)
+    {
+        printf("%dº -  ", x);
+        printf("%5d  -  %5d  -  %10s   -   %5s\n", p_rank, p_time, p_name, p_tema);
+        x++;
+    }
+}
+void ranking()
+{
+    // Adiciona o novo rank
+    FILE *arq;
+
+    if ((arq = fopen("arq.txt", "a")) == NULL)
+    {
+        printf("Erro ao abrir o arquivo.\n");
+    }
+
+    fprintf(arq, "%s %d %d %s\n", name, t_total, rank, curr_tema);
+    fclose(arq);
+
+    // Le a txt
+
+    if ((arq = fopen("arq.txt", "r")) == NULL)
+    {
+        printf("Erro ao abrir o arquivo.\n");
+    }
+    //Struct para receber os dados de cada um do ranking
+    typedef struct player
+    {
+        char p_name[50];
+        int p_time;
+        int p_rank;
+        char p_tema[15];
+    } player;
+
+    player player_rank[100];
+
+    int count = 0;
+
+    while (fscanf(arq, "%s%d%d%s", player_rank[count].p_name, &player_rank[count].p_time, &player_rank[count].p_rank, player_rank[count].p_tema) != -1)
+    {
+        count++;
+    }
+    // printf("%d", count);
+    // Ordena o rank
+    int n = count;
+    // Bubble sort
+    for (int i = n - 1; i >= 1; i--)
+    {
+        for (int j = 0; j < i; j++)
+        {
+            if (player_rank[j].p_rank > player_rank[j + 1].p_rank)
+            {
+                // swap
+                player temp;
+                temp = player_rank[j];
+                player_rank[j] = player_rank[j + 1];
+                player_rank[j + 1] = temp;
+            }
+        }
+    }
+    fclose(arq);
+    // Grava ordenado
+    if ((arq = fopen("arq.txt", "w")) == NULL)
+    {
+        printf("Erro ao abrir o arquivo.\n");
+    }
+    for (int k = 0; k < n; k++)
+    {
+        fprintf(arq, "%s %d %d %s\n", player_rank[k].p_name, player_rank[k].p_time, player_rank[k].p_rank, player_rank[k].p_tema);
+    }
+    fclose(arq);
+    rank = 0;
+}
+void get_name()
+{
+    //Recebe o nome
+    printf("Digite seu nome: ");
+    fflush(stdin);
+    gets(name);
+    fflush(stdin);
+
+    start_game();
+}
+int menu()
+{
+
+    int opc;
+    while (1)
+    {
+        //opçoes do menu
+        printf("\n\t*** Menu ***\n\n");
+        printf("(1) Exibir explicação do jogo\n");
+        printf("(2) Exibir Ranking\n");
+        printf("(3) Sair do jogo\n");
+        printf("(4) Novo Jogo\n\n");
+    again:
+        fflush(stdin);
+        printf("Digite sua opção: ");
+        scanf("%d", &opc);
+
+        switch (opc)
+        {
+        case 1:
+            print_exp();
+            break;
+        case 2:
+            show_ranking();
+            break;
+        case 3:
+            return 0;
+        case 4:
+            get_name();
+            break;
+        default:
+            printf("Opção inválida!\n");
+            goto again;
+            break;
+        }
+    }
+}
+void point(int win, int num, int time)
+{
+    //Estabelece uma  pontuação para cada situação
+    int question_point = 7 - num;
+    switch (win)
+    {
+    case 0: // Perde
+        printf("Resposta Errada!\n");
+        rank += 22;
+        break;
+    case 1: // Ganha
+        printf("Resposta Certa!\n");
+        rank += question_point + time;
+        break;
+    };
+    printf("Pontuação atual: %d\n\n", rank);
+}
+int verify(int gab, char resp[])
+{
+    //verifica se o gabarito é igual a resposta
+    if (strcmp(gab, resp) == 0)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+int start_game()
+{
+    char resp[100], opc;
+    int time_zero = time(NULL), tema, n_quest = 0, quest = 1, time_out = 0, tam_vector;
+// Selecionar tema
+rep:
+    printf("TEMAS\n");
+    printf("P - Pessoa\n");
+    printf("C - Coisa\n");
+    printf("A - Ano\n");
+    printf("L - Lugar - Aula\n");
+    printf("Digite sua opção: ");
+    scanf("%c", &opc);
+    fflush(stdin);
+    switch (opc)
+    {
+    case 'P':
+        tema = 0;
+        tam_vector = 5;
+        strcpy(curr_tema, "Pessoa");
+        break;
+    case 'C':
+        tema = 1;
+        tam_vector = 10;
+        strcpy(curr_tema, "Coisa");
+        puts(curr_tema);
+        break;
+    case 'A':
+        tema = 2;
+        tam_vector = 5;
+        strcpy(curr_tema, "Ano");
+        break;
+    case 'L':
+        tema = 3;
+        tam_vector = 6;
+        strcpy(curr_tema, "Lugar - Aula");
+        break;
+    default:
+        printf("Opção Inválida!\n");
+        goto rep;
+        break;
+    }
+    // Inicia jogo
+    while (time(NULL) - time_zero < TEMPO_JOGO)
+    {
+        while (1)
+        {
+            int time_one = time(NULL);
+            puts(question[tema][n_quest][quest]);
+            printf("Resp: ");
+            gets(resp);
+            fflush(stdin);
+            // Verifica se já atingiu o tempo maximo
+            if (time(NULL) - time_zero >= TEMPO_JOGO)
+            {
+                goto end;
+            }
+            // Verifica o gabarito
+            if (verify(question[tema][n_quest][0], resp) == 1)
+            {
+                // Acertou a tempo -> proxima questao
+                if (time(NULL) - time_one < TEMPO_QUEST)
+                {
+                    point(1, n_quest, time(NULL) - time_one);
+
+                    n_quest++;
+                    quest = 1;
+                }
+                // Não acertou a tempo (ou não digitou)-> timeout -> proxima dica
+                else
+                {
+                    quest++;
+                    printf("\nTempo Esgotado\n");
+                }
+            }
+            else
+            {
+                // Errou -> proxima dica
+                if (time(NULL) - time_one < TEMPO_QUEST)
+                {
+                    point(0, n_quest, time(NULL) - time_one);
+                    quest++;
+                }
+                // Errou -> timeout -> proxima dica
+                else
+                {
+                    quest++;
+                    printf("\nTempo Esgotado\n");
+                }
+            }
+            t_total += time(NULL) - time_one;
+            // Passa para a proxima questao quando chega na ultima
+            if (quest == 8)
+            {
+                printf("Dicas Esgotadas!\n\n");
+                n_quest++;
+                quest = 1;
+            }
+            if (n_quest == 5)
+            {
+                //Fim do Quiz 1 (Acabaram as questoes)
+                printf("Fim do Quiz\n");
+                printf("Você levou %d segundos para concluir!\n", t_total);
+                printf("Sua pontuação total é: %d\n\n", rank);
+                ranking();
+                return 0;
+            }
+            break;
+        }
+    }
+end:
+//Fim do Quiz 2 (Acabou o tempo)
+    printf("\nTimeout (Tempo excedeu 152s)\n");
+    printf("Fim do Quiz\n");
+    printf("Você levou 152 s segundos para concluir!\n", t_total);
+    printf("Sua pontuação total é: %d\n\n", rank);
+    ranking();
+    return 0;
+}
